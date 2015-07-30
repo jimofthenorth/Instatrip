@@ -3,39 +3,9 @@ var maps = require('../api/maps');
 var express = require('express');
 var router = express.Router();
 
-router.post('/', function(req, res) {
-  var start = req.body.start;
-  var end = req.body.end;
 
-  if (!start || !end) {
-    res.status(400).send();
-  }
-
-  maps.get_map_route(start, end).then(function(route) {
-    var steps = route.routes[0].legs[0].steps;
-    var points = maps.choose_points(steps);
-
-    return foursquare.get_foursquare_data_for_array_of_points(points);
-  }).then(function(data) {
-    var venue_ids = {};
-
-    var results = data.map(function(venues) {
-      for(var i = 0; i < venues.length; i++) {
-        if (venue_ids[venues[i].venue.id]) {
-          continue;
-        }
-
-        venue_ids[venues[i].venue.id] = true;
-
-        return {
-          'name': venues[i].venue.name,
-          'coordinates': {
-            'lat': venues[i].venue.location.lat,
-            'lng': venues[i].venue.location.lng
-          },
-          'address': venues[i].venue.location.formattedAddress.join(' '),
-          'foursquare_v2_id': venues[i].venue.id,
-          'photos': [
+// MOCK PHOTOS FOR TESTING
+var mockPhotos = [
             { link: 'https://instagram.com/p/5uoFVfN9xh/',
               url: 'https://scontent.cdninstagram.com/hphotos-xaf1/t51.2885-15/s320x320/e15/11809852_137180456617768_1627430799_n.jpg' },
             { link: 'https://instagram.com/p/5uoDL6kCVb/',
@@ -76,7 +46,50 @@ router.post('/', function(req, res) {
               url: 'https://scontent.cdninstagram.com/hphotos-xfa1/t51.2885-15/s320x320/e15/11313770_696726197127759_58612003_n.jpg' },
             { link: 'https://instagram.com/p/5ug-zfriXY/',
               url: 'https://scontent.cdninstagram.com/hphotos-xaf1/t51.2885-15/s320x320/e15/11330779_940852199306130_1050641706_n.jpg' }
-          ]
+          ];
+
+var mocks = [
+  [mockPhotos[0], mockPhotos[1], mockPhotos[2]],
+  [mockPhotos[3], mockPhotos[4], mockPhotos[5]],
+  [mockPhotos[6], mockPhotos[7], mockPhotos[8]],
+  [mockPhotos[9], mockPhotos[10], mockPhotos[11]],
+  [mockPhotos[12], mockPhotos[13], mockPhotos[14]],
+  [mockPhotos[15], mockPhotos[16], mockPhotos[17]]
+];
+
+router.post('/', function(req, res) {
+  var start = req.body.start;
+  var end = req.body.end;
+
+  if (!start || !end) {
+    res.status(400).send();
+  }
+
+  maps.get_map_route(start, end).then(function(route) {
+    var steps = route.routes[0].legs[0].steps;
+    var points = maps.choose_points(steps);
+
+    return foursquare.get_foursquare_data_for_array_of_points(points);
+  }).then(function(data) {
+    var venue_ids = {};
+
+    var results = data.map(function(venues) {
+      for(var i = 0; i < venues.length; i++) {
+        if (venue_ids[venues[i].venue.id]) {
+          continue;
+        }
+
+        venue_ids[venues[i].venue.id] = true;
+
+        return {
+          'name': venues[i].venue.name,
+          'coordinates': {
+            'lat': venues[i].venue.location.lat,
+            'lng': venues[i].venue.location.lng
+          },
+          'address': venues[i].venue.location.formattedAddress.join(' '),
+          'foursquare_v2_id': venues[i].venue.id,
+          'photos': mocks[i]
         };
       }
     });
