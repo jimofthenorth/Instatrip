@@ -14,7 +14,7 @@ angular.module('instatrip.services', [])
 
     var that = this.curImgs;
 
-    travelMethod = travelMethod || 'DRIVING';
+    travelMethod = travelMethod || 'WALKING';
     start = start || 'San Francisco';
     end = end || 'Oakland';
     var trvmthd = travelMethod;
@@ -98,8 +98,8 @@ angular.module('instatrip.services', [])
         console.log(data);
         var myLatlng = new google.maps.LatLng(data.location.latitude, data.location.longitude);
 
-        var contentString = '<div id="content">' +
-        '<h3>' + data.barName + '</h3>' +
+        var contentString = '<div id="content" class="marker">' +
+        '<div class="marker-title">' + data.barName + '</div>' +
         '</div>';
 
         // This is what will display above the marker when clicked
